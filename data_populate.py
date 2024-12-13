@@ -35,7 +35,7 @@ data = {
 }
 
 
-
+# populate data dictionary
 for word in words:
     print(f"Handling {word}...")
     data["words"].append(word)
@@ -73,7 +73,6 @@ for word in words:
             else:
                 data["double_letter"][letter].append(word)
             added_to_double_letter.add(word)
-
 
 
 file = open("data.json", "w")
