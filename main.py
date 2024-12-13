@@ -1,26 +1,24 @@
 import json
 
-class Solver:
-
-
 from word_dict import words
 
+alphabet = "abcdefghijklmnopqrstuvwxyz"
 # dictionary with words and data attached to them
 data = {
 
-    "first_letter": {
+    "letter1": {
 
     },
-    "second_letter": {
+    "letter2": {
 
     },
-    "third_letter": {
+    "letter3": {
 
     },
-    "fourth_letter": {
+    "letter4": {
 
     },
-    "fifth_letter": {
+    "letter5": {
 
     },
     "has_letter": {
@@ -32,38 +30,57 @@ data = {
     "double_letter": {
     },
 
-    "words": {
-    }
+    "words": []
 
 }
 
+
+# populate data dictionary
 for word in words:
-    data["words"][word] = {}
+    print(f"Handling {word}...")
+    data["words"].append(word)
 
-    if word[0] not in data["first_letter"]:
-        data["first_letter"][word[0]] = [word]
-    else:
-        data["first_letter"][word[0]].append(word)
+    # populate not letter dictionary
+    for letter in alphabet:
+        if letter not in word:
+            if letter not in data["not_letter"]:
+                data["not_letter"][letter] = [word]
+            else:
+                data["not_letter"][letter].append(word)
 
-    if word[1] not in data["second_letter"]:
-        data["second_letter"][word[1]] = [word]
-    else:
-        data["second_letter"][word[1]].append(word)
+    # populate letter dictionaries
 
-    if word[2] not in data["third_letter"]:
-        data["third_letter"][word[2]] = [word]
-    else:
-        data["third_letter"][word[2]].append(word)
+    added_to_letter = set()
+    for i in range(5):
+        if word[i] not in added_to_letter:
+            if word[i] not in data["has_letter"]:
+                data["has_letter"][word[i]] = [word]
+            else:
+                data["has_letter"][word[i]].append(word)
+            added_to_letter.add(word[i])
+
+        if word[i] not in data[f"letter{i+1}"]:
+            data[f"letter{i+1}"][word[i]] = [word]
+        else:
+            data[f"letter{i+1}"][word[i]].append(word)
     
-    if word[3] not in data["fourth_letter"]:
-        data["fourth_letter"][word[3]] = [word]
-    else:
-        data["fourth_letter"][word[3]].append(word)
+    # Check for double letters
+    added_to_double_letter = set()
+    for letter in set(word):
+        if word.count(letter) > 1 and word not in added_to_double_letter:
+            if letter not in data["double_letter"]:
+                data["double_letter"][letter] = [word]
+            else:
+                data["double_letter"][letter].append(word)
+            added_to_double_letter.add(word)
     
-    if word[4] not in data["fifth_letter"]:
-        data["fifth_letter"][word[4]] = [word]
-    else:
-        data["fifth_letter"][word[4]].append(word)
-    
-    
+
+
+    if len(data["words"]) > 100:
+        break
+
+print(data)
+
+file = open("data.json", "w")
+file.write(json.dumps(data, indent=4))
 
