@@ -8,6 +8,8 @@ with open("data.json", "r") as file:
 class Solver:
     """Class to solve the wordle"""
 
+    # TODO make it handle the words starting with green letters, then yellow, then grey
+
     def __init__(self, data):
         """Initializes the class and its variables"""
         self.alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -263,7 +265,6 @@ class Solver:
                 self.turn += 1
 
                 print(f"There are now {len(self.possible_words)} possible words\n\n")
-
             if self.win():
                 print(f"The word is {self.recommend_word()}")
             else:
