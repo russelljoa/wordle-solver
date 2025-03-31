@@ -7,9 +7,10 @@ with open("data.json", "r") as file:
 
 class Solver:
     """Class to solve the wordle"""
-
-    # TODO make it handle the words starting with green letters, then yellow, then grey
-
+    #TODO make reccomend word with remaining letters pull from grey letters too but score so words with the highest score and 3 or more remaining letters are reccomended
+    #TODO make different solving modes
+    # TODO add colors to the output but make blue the color of sqares that the bot is unsure of
+    #EX: 1. prioritize getting the word by the end, 2. prioritize getting the word in as few guesses as possible
     def __init__(self, data):
         """Initializes the class and its variables"""
         self.alphabet = "abcdefghijklmnopqrstuvwxyz"
@@ -71,20 +72,49 @@ class Solver:
 
         return words
 
+    def test_prune_letters(self):
+        """returns if it would be better to prune the remaining letters within possible words"""
+        if self.turn == 6 or len(self.possible_words) <= 10:
+            return False
+        print(f"Remaining letters: {len(self.remaining_letters())}{self.remaining_letters()}\n4-self.turn: {4-self.turn}\nTurn: {self.turn}")
+        if len(self.remaining_letters()) < (5 - self.turn) * 5 and self.turn <= 3:
+            print(f"Turns left before last: {5 - self.turn}")
+            return True
+        return False
+        
+    
+    def remaining_letters(self):
+        """Returns the remaining letters"""
+        letters = set()
+        green = [green[0] for green in self.green_letters]
+        yellow = [yellow[0] for yellow in self.yellow_letters]
+        for word in self.possible_words:
+            for letter in word:
+                if (letter not in green and letter not in yellow) or (letter in "aeiou"):
+                    letters.add(letter)
+        #print(f"Remaining letters in possible words: {letters}")
+        return letters
+                        
+            
+    
+    # make a function that returns words that contain unguessed letters if similar words returns True
+
+
     def get_valid_words(self):
         """Returns all the valid words"""
         words = set()
         words.update(self.get_green_words())
         words.update(self.get_yellow_words())
         words.update(self.get_grey_words())
-
         print(f"Found {len(words)} valid words")
         return words
     
+
     def prune_words(self):
         """Prunes the possible words (should be called after every guess)"""
         count = 0
-        for word in self.possible_words:
+        # Iterate over a copy of the set to avoid modifying it during iteration
+        for word in list(self.possible_words):
             if not self.is_valid(word):
                 count += 1
                 self.possible_words.remove(word)
@@ -111,13 +141,13 @@ class Solver:
             if letter in word:
                 #print("false because it has a grey letter")
                 return False
+        #returns true if it passes all checks
         return True
     
     def add_green_letter(self, letter, position):
         """Adds a green letter to the solver"""
         # Adds the letter to the green letters and removes it from the unguessed letters
         self.green_letters.add((letter, position))
-
         self.unguessed_letters.discard((letter, position))
 
     def add_yellow_letter(self, letter, position):
@@ -130,6 +160,8 @@ class Solver:
         """Adds a grey letter to the solver"""
         # Adds the letter to the grey letters and removes it from the unguessed letters
         # doesn't get rid of a letter if it is in green already
+
+        # if letter is green, don't add it to grey, instead update max letter count for that letter
         for green in self.green_letters:
             if letter == green[0]:
                 self.yellow_letters.add((letter, position))
@@ -137,18 +169,17 @@ class Solver:
         for yellow in self.yellow_letters:
             if letter == yellow[0]:
                 add = True
-
         if add:
             self.yellow_letters.add((letter, position))
+
         temp_green = [green[0] for green in self.green_letters]    
         temp_yellow = [yellow[0] for yellow in self.yellow_letters]
         if letter not in temp_green and letter not in temp_yellow:
             self.grey_letters.add((letter, position))
-
+        
         for x in range(5):
             if (letter, x) in self.unguessed_letters:
                 self.unguessed_letters.discard((letter, x))
-    
     
     def get_score(self, word):
         """Returns the score of a word"""
@@ -193,7 +224,28 @@ class Solver:
         """Recommends the best word based on the current state"""
         if not self.weighted_words:
             return None
-        return max(self.weighted_words, key=self.weighted_words.get)
+        if self.test_prune_letters():
+            print(f"reccomending word based on remaining letters to remove possible words")
+            words = set()
+            remaining_letters = self.remaining_letters()
+            for word in self.possible_words:
+                # checks if the word is composed fully of remaining letters
+                count = 0
+                for letter in word:
+                    if letter in remaining_letters:
+                        count += 1
+                # checks if the word is composed of 3 or more remaining letters
+                if count >= 3:
+                    words.add(word)
+            if len(words) == 0:
+                print("No words found with all letters")
+                return max(self.weighted_words, key=self.weighted_words.get)
+            else:
+                print("word found with needed letters")
+                return random.choice(list(words))
+                        
+        else:
+            return max(self.weighted_words, key=self.weighted_words.get)
     
     def win(self):
         """Returns True if the solver has won"""
@@ -214,20 +266,23 @@ class Solver:
             return False
         return True
         
-            
-    
     def handle_word(self, word, color):
         """Handles the word and its color"""
         word = word.lower()
-        for x in range(5):
-            if color[x] == "2":
-                self.add_green_letter(word[x], x)
-            elif color[x] == "1":
-                self.add_yellow_letter(word[x], x)
-            elif color[x] == "0":
-                self.add_grey_letter(word[x], x)
+        # sorts word based on color putting green first, then yellow, then grey
+        # this is done so grey letters that have valid positions are not added as grey
+        # format [int: color, str: letter, int: position]
+        word_list = [[int(color[x]), word[x], x] for x in range(len(word))]
+        word_list.sort(reverse = True)
+        print(word_list)
+        for word_item in word_list:
+            if word_item[0] == 2:
+                self.add_green_letter(word_item[1], word_item[2])
+            elif word_item[0] == 1:
+                self.add_yellow_letter(word_item[1], word_item[2])
+            elif word_item[0] == 0:
+                self.add_grey_letter(word_item[1], word_item[2])
 
-    
     def start(self):
         while True:
             print("Starting solver...\n\n")
@@ -249,8 +304,9 @@ class Solver:
                         break
                     else:
                         print("Invalid input. Please try again\n")
-                
-                self.possible_words = self.get_valid_words()
+                if self.turn == 0:
+                    self.possible_words = self.get_valid_words()
+
                 # prunes the possible words
                 self.prune_words()
                 self.weight_words()

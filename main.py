@@ -1,6 +1,8 @@
 import json
 
-from words_dict import words
+import words_dict
+
+words = words_dict.words_dict["words"]
 
 alphabet = "abcdefghijklmnopqrstuvwxyz"
 # dictionary with words and data attached to them
