@@ -9,7 +9,7 @@ with open("data.json", "r") as file:
 
 # Load or initialize the fails.json file.
 try:
-    with open("testSuite/fails.json", "r") as file:
+    with open("fails.json", "r") as file:
         fails_data = json.load(file)
 except FileNotFoundError:
     fails_data = {"fails": []}  # Initialize with an empty "fails" list if the file doesn't exist.
@@ -43,7 +43,7 @@ for secret in test_words:
             fails_data["fails"].append(secret)
 
 # Save the updated fails.json data.
-with open("testSuite/fails.json", "w") as file:
+with open("fails.json", "w") as file:
     json.dump(fails_data, file, indent=2)
 
 # Calculate and display the success rate.
