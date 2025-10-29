@@ -1,3 +1,7 @@
+"""
+Takes the list of words in words_dict and populates data.json with the necessary data structures for the solver to run.
+"""
+
 import json
 
 from words_dict import words
