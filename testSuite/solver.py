@@ -2,6 +2,9 @@ import random
 import json
 import colorama
 
+
+# Version of solver made to run without user input for testing purposes.
+
 def compute_feedback(guess, secret):
     """
     Computes Wordle feedback for a guess:

@@ -1,7 +1,7 @@
 import json
 import random
 import time
-from solver import run_solver
+from main import run_solver
 
 # Load the word data.
 with open("data.json", "r") as file:
@@ -27,6 +27,7 @@ results = []
 success_count = 0
 guess_list = []
 count = 1
+
 for secret in test_words:
     print(f'Attempt {count} of {num_tests} | Success Rate: {int((success_count/count) * 10000)/100}%', end='\r')
     count += 1
