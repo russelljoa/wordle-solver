@@ -287,7 +287,7 @@ class Solver:
         self.weighted_words = {}
 
         # Use "trace" as the first guess.
-        first_guess = "crane"
+        first_guess = "stale"
         feedback = compute_feedback(first_guess, secret_word)
         self.handle_word(first_guess, feedback)
         self.prune_words()

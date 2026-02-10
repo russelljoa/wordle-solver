@@ -1,7 +1,7 @@
 import json
 import random
 import time
-from main import run_solver
+from solver import run_solver
 
 # Load the word data.
 with open("data.json", "r") as file:
