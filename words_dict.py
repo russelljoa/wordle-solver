@@ -1,4 +1,4 @@
-words_dict = {"words": [
+words = {"words": [
     "which",
     "there",
     "their",
