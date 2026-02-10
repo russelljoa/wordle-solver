@@ -12,7 +12,7 @@ This project implements an intelligent word solver that tracks letter positions 
 - **Word Filtering**: Dynamically filters possible words based on letter constraints
 - **Strategic Guessing**: Recommends words based on remaining possibilities and letter frequency
 - **Configurable Modes**: Support for different solving strategies (prioritize speed vs. minimize guesses)
-- **Comprehensive Word List**: Utilizes an extensive dictionary for valid Wordle words
+- **Comprehensive Word List**: Utilizes an extensive dictionary for valid Wordle words (includes valid input words from both NYT wordle and Wordle Unlimited as of June 2025)
 - **Test Suite**: Includes automated testing framework for validation
 
 ## Project Structure
